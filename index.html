@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Laudel Industries – Catalog + Media + Cart + Portal</title>
+
+<meta http-equiv="Cache-Control" content="no-store"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+:root{--headerH:140px;--taxRate:0.087;--blue:#0b57d0;}
+body{margin:0;font-family:Arial,system-ui,Segoe UI,sans-serif;background:#f4f6f8;padding-bottom:70px;color:#111}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;height:var(--headerH);background:#000;display:flex;justify-content:space-between;align-items:center;padding:20px 50px;z-index:1000}
+header img{height:110px}
+.header-spacer{height:var(--headerH)}
+
+/* NAV */
+.navBar{background:#111;color:#fff;padding:12px 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+.navBar input{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#fff;color:#111;outline:none;width:min(520px,92vw)}
+.navBar select{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:#1b1b1b;color:#fff;outline:none;min-width:220px}
+.navBar select option{background:#fff;color:#111}
+.navBtn{padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);cursor:pointer;user-select:none;font-weight:800;font-size:13px}
+.navBtn:hover{background:rgba(255,255,255,.12)}
+.navRight{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* MEDIA BANNER + MEDIA GRID */
+#mediaBanner{background:linear-gradient(180deg,#071b2d 0%, #092741 55%, #071b2d 100%);border-bottom:6px solid #000;width:100%}
+.bannerStage{position:relative;width:100%;min-height:420px;padding:30px 10px;box-sizing:border-box;overflow:hidden;background:#071b2d;display:flex;align-items:center;justify-content:center}
+.bannerStage img,.bannerStage video{display:block;margin:auto;max-width:100%;max-height:580px;width:auto;height:auto;object-fit:contain;background:#071b2d;cursor:zoom-in}
+.bannerDots{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:7px;z-index:3}
+.bannerDot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.35);border:1px solid rgba(0,0,0,.35);cursor:pointer}
+.bannerDot.active{background:#fff}
+.bannerControls{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 12px;pointer-events:none;z-index:3}
+.bannerBtn{pointer-events:auto;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.20);color:#fff;font-size:22px;font-weight:900;cursor:pointer;user-select:none}
+.bannerBtn:hover{background:rgba(0,0,0,.5)}
+
+.mediaSection{background:#fff;padding:30px 18px;border-top:6px solid #000}
+.mediaInner{max-width:1500px;margin:0 auto}
+.mediaGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.mediaCard{border:1px solid #d0d0d0;border-radius:14px;background:#fff;padding:12px;display:flex;flex-direction:column}
+.mediaCard img{width:100%;height:220px;object-fit:contain;background:#fafafa;border-radius:12px;border:1px solid #eee;cursor:zoom-in}
+.mediaCard h3{margin:10px 0 0;font-size:13px}
+.mediaCard p{margin:6px 0 0;font-size:12px;color:#666;line-height:1.35}
+
+/* MEDIA ZOOM OVERLAY */
+#mediaZoomOverlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:22000}
+#mediaZoomInner{background:#000;border-radius:14px;max-width:96vw;max-height:96vh;padding:10px 10px 14px;box-shadow:0 0 45px rgba(0,0,0,.9);display:flex;flex-direction:column;gap:10px;color:#fff}
+#mediaZoomClose{align-self:flex-end;background:rgba(255,255,255,.14);border:none;border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;cursor:pointer}
+#mediaZoomImg{max-width:100%;max-height:80vh;object-fit:contain;background:#000;border-radius:10px}
+#mediaZoomTitle{font-size:14px;font-weight:bold;margin-top:2px}
+#mediaZoomDesc{font-size:12px;opacity:.9}
+
+/* CATALOG */
+.section{background:#fff;padding:46px 18px;border-top:6px solid #000}
+.sectionInner{max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{border:1px solid #cfcfcf;border-radius:12px;padding:12px;background:#fff;display:flex;flex-direction:column;gap:10px}
+.card img{width:100%;height:180px;object-fit:contain;background:#fafafa;border-radius:10px;border:1px solid #eee;cursor:zoom-in}
+.card h4{color:var(--blue);margin:0;font-size:14px;line-height:1.35}
+.metaLine{font-size:12px;color:#333;opacity:.9}
+.priceRow{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.msrp{text-decoration:line-through;font-size:12px;color:#777}
+.onlinePrice{font-weight:900;font-size:16px}
+.b2b{background:var(--blue);color:#fff;font-size:11px;padding:3px 7px;border-radius:999px;margin-left:4px}
+.miniBtn{margin-top:4px;padding:10px;background:#000;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900}
+.miniBtn:hover{background:#111}
+.descToggle{font-size:12px;color:var(--blue);cursor:pointer;user-select:none}
+.descBox{display:none;font-size:12px;background:#fafafa;border:1px solid #eee;padding:10px;border-radius:10px;line-height:1.45;white-space:pre-wrap}
+.descBox.open{display:block}
+
+/* CART */
+.drawer{position:fixed;top:0;right:-420px;width:380px;max-width:92vw;height:100vh;background:#fff;border-left:1px solid #ccc;box-shadow:-10px 0 30px rgba(0,0,0,.2);z-index:12000;transition:right .3s ease}
+.drawer.open{right:0}
+.drawerHeader{background:#111;color:#fff;padding:12px;display:flex;justify-content:space-between;align-items:center}
+.drawerBody{padding:14px;overflow:auto;height:calc(100vh - 50px)}
+.cartItem{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eee}
+.cartItem b{font-size:13px}
+.cartControls{display:flex;gap:6px;align-items:center}
+.qtyBtn{width:26px;height:26px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer}
+.qtyBtn:hover{background:#f1f1f1}
+.dangerBtn{background:#b00020;color:#fff;border:none;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:900}
+.dangerBtn:hover{background:#98001b}
+.note{font-size:12px;opacity:.75;line-height:1.4}
+
+/* RFQ MODAL */
+#rfqOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:15000}
+#rfqModal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:95%;max-width:980px;background:#fff;padding:0;border-radius:14px;display:none;z-index:15001;max-height:90vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.rfqHead{background:#111;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.rfqBody{padding:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:800px){.grid2{grid-template-columns:1fr}}
+.fInput,.fText,.fSelect{width:100%;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;outline:none;font-size:14px}
+.fText{min-height:110px;resize:vertical}
+.fLabel{font-size:12px;color:#555;margin:0 0 6px}
+.submitBtn{background:#000;color:#fff;border:none;border-radius:10px;padding:12px;width:100%;cursor:pointer;font-weight:900}
+.submitBtn:hover{background:#111}
+
+/* PAYMENT MODAL (Order Now) */
+#payOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:15500}
+#payModal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:95%;max-width:1000px;background:#fff;border-radius:14px;display:none;z-index:15501;max-height:90vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.payHead{background:#111;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.payBody{padding:16px}
+.payCols{display:grid;grid-template-columns:2fr 1.3fr;gap:16px}
+@media (max-width:900px){.payCols{grid-template-columns:1fr}}
+.payQRBox{border:1px solid #ddd;border-radius:12px;padding:10px;background:#fafafa}
+.payQRBox h4{margin:0 0 8px;font-size:14px}
+.payQRGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.payQRCard{border-radius:10px;background:#fff;border:1px solid #e0e0e0;padding:8px;text-align:center;font-size:12px}
+.payQRCard img{width:100%;height:140px;object-fit:contain}
+
+/* USER / ADMIN PORTAL */
+#portal{position:fixed;bottom:80px;right:20px;width:360px;max-width:92vw;background:#fff;border:1px solid #ccc;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;z-index:11000}
+#portal.min{height:44px;overflow:hidden}
+.portalHead{background:#111;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.portalBody{padding:12px}
+.pInput{width:100%;padding:10px 12px;margin-top:8px;border:1px solid #ccc;border-radius:10px;outline:none}
+.pBtn{width:100%;padding:10px;margin-top:10px;background:#111;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900}
+.pBtn:hover{background:#000}
+.miniLink{font-size:12px;color:var(--blue);cursor:pointer;user-select:none}
+.adminPanel{margin-top:12px;padding:12px;border:1px solid #e5e5e5;border-radius:12px;background:#fafafa}
+.adminPanel h4{margin:0 0 8px;font-size:14px}
+
+/* LEGAL DRAWER */
+#legalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.25s;z-index:19999}
+#legalDrawer{position:fixed;left:50%;bottom:-90%;transform:translateX(-50%);width:min(1000px,95%);height:85%;background:#111;color:#eee;z-index:20000;overflow:auto;padding:35px 50px;border-radius:14px 14px 0 0;transition:bottom .35s cubic-bezier(.22,.9,.2,1)}
+
+/* FOOTER */
+.footer{position:fixed;bottom:0;left:0;right:0;background:#111;color:#ccc;padding:10px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;z-index:9999}
+.footer a{cursor:pointer;text-decoration:underline}
+</style>
+</head>
+
+<body>
+<header>
+  <img src="logo.png" alt="Laudel Industries Logo" onerror="this.src='placeholder.png'">
+  <img src="logo2.png" alt="Secondary Logo" onerror="this.src='placeholder.png'">
+</header>
+<div class="header-spacer"></div>
+
+<div class="navBar">
+  <input id="search" placeholder="Search product or SKU" aria-label="Search">
+  <select id="categoryFilter" aria-label="Category"></select>
+  <select id="subCategoryFilter" aria-label="Subcategory"></select>
+
+  <div class="navRight">
+    <div class="navBtn" onclick="openRFQ()">Request Quote</div>
+    <div class="navBtn" onclick="toggleCart(true)">Cart</div>
+    <div class="navBtn" onclick="openPortal()">User Login</div>
+    <div class="navBtn" onclick="toggleLegal(true)">Legal</div>
+  </div>
+</div>
+
+<!-- MEDIA BANNER -->
+<div id="mediaBanner">
+  <div class="bannerStage">
+    <div class="bannerControls">
+      <div class="bannerBtn" onclick="bannerPrev()" title="Previous">‹</div>
+      <div class="bannerBtn" onclick="bannerNext()" title="Next">›</div>
+    </div>
+    <div id="bannerMedia" style="width:100%;height:100%"></div>
+    <div class="bannerDots" id="bannerDots"></div>
+  </div>
+</div>
+
+<!-- MEDIA GRID SECTION -->
+<section class="mediaSection">
+  <div class="mediaInner">
+    <h2 style="margin:0 0 14px;font-size:18px">Media &amp; Payments Overview</h2>
+    <div id="mediaGrid" class="mediaGrid"></div>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section class="section">
+  <div class="sectionInner">
+    <h2 style="margin:0 0 14px;font-size:20px">Catalog</h2>
+    <div id="products" class="grid"></div>
+    <div id="scrollTrigger" style="height:60px"></div>
+  </div>
+</section>
+
+<!-- CART -->
+<div id="cart" class="drawer">
+  <div class="drawerHeader">
+    <b>Cart</b>
+    <span onclick="toggleCart(false)" style="cursor:pointer">✕</span>
+  </div>
+  <div class="drawerBody">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="pBtn" style="margin-top:0;background:#000" onclick="openPayModal()">Order Now – PayPal / Venmo</button>
+      <button class="pBtn" style="margin-top:0;background:#222" onclick="openRFQ()">RFQ Estimate</button>
+      <button class="dangerBtn" onclick="clearCart()">Clear Cart</button>
+    </div>
+
+    <div id="cartItems"></div>
+
+    <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px">
+      <div style="display:flex;justify-content:space-between"><span>Subtotal</span><b id="subTotal">$0.00</b></div>
+      <div style="display:flex;justify-content:space-between"><span>Est. Tax (8.7%)</span><b id="taxLine">$0.00</b></div>
+      <div style="display:flex;justify-content:space-between;font-size:16px;margin-top:6px"><span>Total</span><b id="grandTotal">$0.00</b></div>
+      <div class="note" id="taxNote" style="margin-top:6px"></div>
+    </div>
+
+    <form action="https://formsubmit.co/sales.laudelindustries@gmail.com" method="POST" style="margin-top:12px">
+      <input type="hidden" name="_subject" value="Cart Inquiry">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="Pricing Mode" id="pricingModeField" value="Public">
+      <textarea id="cartDetails" name="Cart Details" style="width:100%;height:150px;border:1px solid #ccc;border-radius:10px;padding:10px"></textarea>
+      <button type="submit" style="width:100%;margin-top:10px;background:black;color:white;padding:12px;border:none;border-radius:10px;cursor:pointer;font-weight:900">Send Inquiry</button>
+    </form>
+  </div>
+</div>
+
+<!-- RFQ MODAL -->
+<div id="rfqOverlay" onclick="closeRFQ()"></div>
+<div id="rfqModal" role="dialog" aria-modal="true" aria-label="Request for Quote">
+  <div class="rfqHead">
+    <b>Request for Quote</b>
+    <span onclick="closeRFQ()" style="cursor:pointer">✕</span>
+  </div>
+  <div class="rfqBody">
+    <form action="https://formsubmit.co/sales.laudelindustries@gmail.com" method="POST" onsubmit="return syncRFQMeta()">
+      <input type="hidden" name="_subject" value="Request for Quote">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="Pricing Mode" id="rfqPricingMode" value="Public">
+      <input type="hidden" name="Selected Category" id="rfqCategory" value="">
+      <input type="hidden" name="Selected Subcategory" id="rfqSubCategory" value="">
+
+      <div class="grid2">
+        <div><p class="fLabel">First Name</p><input class="fInput" name="First Name" required></div>
+        <div><p class="fLabel">Last Name</p><input class="fInput" name="Last Name" required></div>
+        <div><p class="fLabel">Company</p><input class="fInput" name="Company"></div>
+        <div><p class="fLabel">Email</p><input class="fInput" name="Email" type="email" required></div>
+        <div><p class="fLabel">Phone</p><input class="fInput" name="Phone"></div>
+        <div>
+          <p class="fLabel">Quote Type</p>
+          <select class="fSelect" name="Quote Type">
+            <option>Product / Cart RFQ</option>
+            <option>Service Request Quote</option>
+            <option>Bulk / Project BOM Quote</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <p class="fLabel">Notes / Requirements</p>
+        <textarea class="fText" name="Notes" placeholder="Quote details..."></textarea>
+      </div>
+
+      <div style="margin-top:12px">
+        <p class="fLabel">Cart Items (auto-filled)</p>
+        <textarea class="fText" name="Cart Items" id="rfqCartData" readonly></textarea>
+      </div>
+
+      <div style="margin-top:14px">
+        <button type="submit" class="submitBtn">Submit RFQ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL (ORDER NOW) -->
+<div id="payOverlay" onclick="closePayModal()"></div>
+<div id="payModal" role="dialog" aria-modal="true" aria-label="Online Order – PayPal / Venmo">
+  <div class="payHead">
+    <b>Online Order – PayPal / Venmo</b>
+    <span onclick="closePayModal()" style="cursor:pointer">✕</span>
+  </div>
+  <div class="payBody">
+    <div class="payCols">
+      <!-- LEFT: Customer + order summary -->
+      <div>
+        <form action="https://formsubmit.co/sales.laudelindustries@gmail.com" method="POST" onsubmit="return syncPaymentMeta()">
+          <input type="hidden" name="_subject" value="Online Order – PayPal / Venmo">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="Pricing Mode" id="paymentPricingMode" value="Public">
+          <input type="hidden" name="Order Total" id="paymentTotal" value="0.00">
+
+          <div class="grid2">
+            <div><p class="fLabel">First Name</p><input class="fInput" name="First Name" required></div>
+            <div><p class="fLabel">Last Name</p><input class="fInput" name="Last Name" required></div>
+            <div><p class="fLabel">Email</p><input class="fInput" name="Email" type="email" required></div>
+            <div><p class="fLabel">Phone</p><input class="fInput" name="Phone"></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <p class="fLabel">Payment Method (select what you will use)</p>
+            <select class="fSelect" name="Payment Method" id="paymentMethod">
+              <option>PayPal</option>
+              <option>Venmo</option>
+              <option>Other / Bank Transfer</option>
+            </select>
+          </div>
+
+          <div style="margin-top:12px">
+            <p class="fLabel">Cart Items (auto-filled)</p>
+            <textarea class="fText" name="Cart Items" id="paymentCartData" readonly></textarea>
+          </div>
+
+          <div style="margin-top:12px">
+            <p class="fLabel">Order Total (subtotal + est. tax if applicable)</p>
+            <input class="fInput" id="paymentTotalDisplay" name="Order Total (Display)" readonly>
+          </div>
+
+          <div style="margin-top:12px">
+            <p class="fLabel">Notes to Laudel (PO, project, ship-to, etc.)</p>
+            <textarea class="fText" name="Notes" placeholder="Add purchase order, project reference, shipping instructions, etc."></textarea>
+          </div>
+
+          <div style="margin-top:12px" class="note">
+            After submitting this form, use the PayPal or Venmo QR on the right to complete payment.
+            Include your <b>name and email</b> in the payment notes so we can match your order.
+          </div>
+
+          <div style="margin-top:14px">
+            <button type="submit" class="submitBtn">Submit Order Details to Laudel</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- RIGHT: QR codes -->
+      <div>
+        <div class="payQRBox">
+          <h4>Pay via PayPal or Venmo</h4>
+          <p class="note">Scan the QR codes below from your phone to open PayPal or Venmo. Use the same name/email as entered on the left so we can match your payment to this order.</p>
+          <div class="payQRGrid">
+            <div class="payQRCard">
+              <b>PayPal</b>
+              <img src="paypal_qr.png" alt="PayPal QR Code" onerror="this.src='placeholder.png'">
+              <div style="margin-top:4px;font-size:11px">
+                Or visit:<br>
+                <a href="https://www.paypal.com" target="_blank" rel="noopener" style="color:#0b57d0;text-decoration:underline">paypal.com</a>
+              </div>
+            </div>
+            <div class="payQRCard">
+              <b>Venmo</b>
+              <img src="venmo_qr.png" alt="Venmo QR Code" onerror="this.src='placeholder.png'">
+              <div style="margin-top:4px;font-size:11px">
+                Or visit:<br>
+                <a href="https://www.venmo.com" target="_blank" rel="noopener" style="color:#0b57d0;text-decoration:underline">venmo.com</a>
+              </div>
+            </div>
+          </div>
+          <div class="note" style="margin-top:8px">
+            This page does not send card data to PayPal or Venmo. You complete payment directly in those apps; we receive your order and cart via email.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- USER / ADMIN PORTAL -->
+<div id="portal">
+  <div class="portalHead">
+    <b>User Portal</b>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span onclick="minPortal()" style="cursor:pointer">–</span>
+      <span onclick="closePortal()" style="cursor:pointer">✕</span>
+    </div>
+  </div>
+  <div class="portalBody">
+    <div id="portalLoggedOut">
+      <input id="email" class="pInput" placeholder="Email">
+      <input id="pass" class="pInput" type="password" placeholder="Password">
+      <button class="pBtn" onclick="login()">Login</button>
+      <button class="pBtn" onclick="signup()">Create Account</button>
+      <div style="display:flex;justify-content:space-between;gap:10px;margin-top:8px">
+        <span class="miniLink" onclick="resetPass()">Reset Password</span>
+        <span class="miniLink" onclick="openAdminLogin()">Admin Login</span>
+      </div>
+      <p id="msg" style="color:#b00020;font-size:13px;margin:10px 0 0"></p>
+      <div class="note" style="margin-top:10px">Demo auth uses localStorage. Admin controls B2B status for user profiles.</div>
+    </div>
+
+    <div id="portalLoggedIn" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <b id="whoami">Signed in</b>
+          <div class="note" id="acctTypeNote"></div>
+        </div>
+        <button class="dangerBtn" onclick="logout()">Logout</button>
+      </div>
+      <div style="margin-top:10px">
+        <button class="pBtn" style="background:#000" onclick="openRFQ()">Request for Quote</button>
+      </div>
+      <div class="note" style="margin-top:10px">Public = 10% off MSRP + estimated tax. B2B = 20% off MSRP (MAP enforced), tax not estimated.</div>
+    </div>
+
+    <div id="adminLoginBox" class="adminPanel" style="display:none">
+      <h4>Admin Login</h4>
+      <div class="note" style="margin-bottom:8px">
+        Admin Credentials (demo):<br>
+        <b>Username:</b> admin@laudelindustries.com<br>
+        <b>Password:</b> LI-ADMIN-2026
+      </div>
+      <input id="adminUser" class="pInput" placeholder="Admin Username">
+      <input id="adminPass" class="pInput" type="password" placeholder="Admin Password">
+      <button class="pBtn" onclick="adminLogin()">Sign In as Admin</button>
+      <div class="note" style="margin-top:6px">Demo only. Replace with server-side auth in production.</div>
+    </div>
+
+    <div id="adminPanel" class="adminPanel" style="display:none">
+      <h4>Admin Panel</h4>
+      <div class="note">Assign B2B status to user accounts. B2B gets 20% off MSRP (MAP enforced, hidden). Public gets 10% off MSRP and estimated tax.</div>
+
+      <div style="margin-top:10px;border-top:1px solid #e5e5e5;padding-top:12px">
+        <p class="fLabel">Find User by Email</p>
+        <input id="adminFindEmail" class="fInput" placeholder="user@example.com">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+          <button class="pBtn" style="margin-top:0" onclick="adminSetB2B(true)">Set B2B</button>
+          <button class="pBtn" style="margin-top:0;background:#000" onclick="adminSetB2B(false)">Set Public</button>
+        </div>
+        <div class="note" id="adminUserStatus" style="margin-top:8px"></div>
+      </div>
+
+      <div style="margin-top:14px;border-top:1px solid #e5e5e5;padding-top:12px">
+        <h4 style="margin:0 0 8px;font-size:14px">External API &amp; App Add-ons</h4>
+        <div class="note">Store integration endpoints/keys here (localStorage demo) to connect inventory, CRM, or other apps.</div>
+
+        <p class="fLabel" style="margin-top:10px">Inventory API Base URL</p>
+        <input id="apiInventoryUrl" class="fInput" placeholder="https://api.yourinventory.com/v1">
+
+        <p class="fLabel" style="margin-top:10px">CRM / App Webhook URL</p>
+        <input id="apiCrmUrl" class="fInput" placeholder="https://hooks.yourcrm.com/lead">
+
+        <p class="fLabel" style="margin-top:10px">API Key (stored locally)</p>
+        <input id="apiKey" class="fInput" placeholder="Paste key (demo storage)">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button class="pBtn" style="margin-top:0;background:#000" onclick="adminSaveApi()">Save API Settings</button>
+          <button class="dangerBtn" onclick="adminClearApi()">Clear API Settings</button>
+        </div>
+
+        <div class="note" id="apiStatus" style="margin-top:8px"></div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="dangerBtn" onclick="adminLogout()">Admin Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MEDIA ZOOM OVERLAY -->
+<div id="mediaZoomOverlay" onclick="if(event.target===this) closeMediaZoom()">
+  <div id="mediaZoomInner">
+    <button id="mediaZoomClose" onclick="closeMediaZoom()">✕</button>
+    <img id="mediaZoomImg" src="" alt="Media detail">
+    <div id="mediaZoomTitle"></div>
+    <div id="mediaZoomDesc"></div>
+  </div>
+</div>
+
+<!-- LEGAL -->
+<div id="legalOverlay"></div>
+<div id="legalDrawer">
+  <h2>Laudel Industries Terms &amp; Policies</h2>
+  <p>This website operates as a procurement and fulfillment service. Orders are confirmed after availability verification and MAP compliance.</p>
+  <p>Payment instructions are issued after order confirmation. Shipment begins only after payment verification.</p>
+  <p>Products may ship from distributor or manufacturer warehouses.</p>
+  <p><b>30 Day Return Policy:</b> Online catalog items may be returned within 30 days if unused and in original packaging. Special orders are non-returnable.</p>
+  <p>Manufacturer warranties apply where provided. Laudel Industries guarantees correct procurement only.</p>
+  <p>Use of this site constitutes acceptance of these policies.</p>
+  <button onclick="toggleLegal(false)" style="margin-top:20px;padding:10px;background:#333;color:#fff;border:none;border-radius:10px;cursor:pointer">Close</button>
+</div>
+
+<div class="footer">
+  <span>© Laudel Industries 2026</span>
+  <span>
+    <a onclick="openRFQ()">Request Quote</a> |
+    <a onclick="openPortal()">User Login</a> |
+    <a onclick="toggleCart(true)">Cart</a> |
+    <a onclick="toggleLegal(true)">Legal</a>
+  </span>
+</div>
+
+<script>
+const TAX_RATE = 0.087;
+const BATCH_SIZE = 100;
+const ADMIN_USERNAME = "admin@laudelindustries.com";
+const ADMIN_PASSWORD = "LI-ADMIN-2026";
+
+/* MEDIA FILES – EXACT FILENAMES FROM FOLDER */
+const MEDIA = [
+  { src:"hero.png",             title:"Marine & RV Lighting Supply",  desc:"Primary hero banner for Marine & RV lighting and wiring supply handled by Laudel Industries." },
+  { src:"marine_media.png",     title:"Marine Media",                 desc:"Marketing media for marine projects, vessels and dockside applications." },
+  { src:"industrial_media.png", title:"Industrial Media",             desc:"Industrial supply media used for commercial, fleet and plant projects." },
+  { src:"engineering_media.png",title:"Engineering Media",            desc:"Engineering and OEM support overview – project drawings, BOM support and validation." },
+  { src:"tires_media.png",      title:"Tires & Wheels Media",         desc:"Tires, wheels and off-road product focus for powersports and trailer markets." },
+  { src:"payment_flowchart.png",title:"Payment Flowchart",            desc:"Graphic showing step-by-step payment and fulfillment workflow." },
+  { src:"paypal_qr.png",        title:"PayPal QR",                    desc:"QR code for PayPal payment options." },
+  { src:"venmo_qr.png",         title:"Venmo QR",                     desc:"QR code for Venmo payment options." }
+];
+
+let products = [];
+let filtered = [];
+let currentIndex = 0;
+let isLoading = false;
+let cart = [];
+let session = { email:null, isLoggedIn:false, isAdmin:false, isB2B:false };
+
+/* helpers */
+function norm(v){ return String(v ?? "").trim(); }
+function parseNum(v){
+  if (v === null || v === undefined) return 0;
+  const x = parseFloat(String(v).replace(/[^0-9.\-]/g,""));
+  return isNaN(x) ? 0 : x;
+}
+function money(n){ return "$" + Number(n || 0).toFixed(2); }
+function escapeHtml(str){
+  return String(str ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* CSV mapping (robust) */
+function getName(p){ return norm(p.product_name || p.name || p.title || "Unnamed Product"); }
+function getSku(p){ return norm(p.sku || p.SKU || p.part_number || p.item_sku || "N/A"); }
+function getImg(p){ return norm(p.image_url || p.image || p.img || p.photo || "") || "placeholder.png"; }
+function getCategory(p){ return norm(p.category || p.Category || p.cat || ""); }
+function getSubcategory(p){ return norm(p.subcategory || p.Subcategory || p.sub_category || p.subcat || ""); }
+function getMsrp(p){ return parseNum(p.msrp || p.MSRP || p.suggested_retail_price || p.retail || p.price_msrp || p.price || 0); }
+function getMap(p){ return parseNum(p.map || p.MAP || p.map_price || p.minimum_advertised_price || 0); }
+
+/* Robust long description detection */
+function getDescription(p){
+  const direct =
+    p.long_description || p.full_description || p.description || p.product_description ||
+    p.item_description || p.details || p.item_details || p.longDescription ||
+    p.Description || p.Details || "";
+  let d = norm(direct);
+  if (d) return d;
+  for (const k in p){
+    const key = String(k).toLowerCase();
+    if (key.includes("desc") || key.includes("detail")){
+      const v = norm(p[k]);
+      if (v) return v;
+    }
+  }
+  return "";
+}
+
+/* Pricing */
+function calcPrices(p){
+  const msrp = getMsrp(p);
+  const mapv = getMap(p);
+  const discount = session.isB2B ? 0.20 : 0.10;
+  let price = msrp > 0 ? msrp * (1 - discount) : 0;
+  if (mapv > 0) price = Math.max(mapv, price);
+  return { msrp, price };
+}
+
+/* MEDIA ZOOM LOGIC */
+function openMediaZoom(src,title,desc){
+  const overlay = document.getElementById("mediaZoomOverlay");
+  const img = document.getElementById("mediaZoomImg");
+  const t = document.getElementById("mediaZoomTitle");
+  const d = document.getElementById("mediaZoomDesc");
+  if (!overlay || !img || !t || !d) return;
+  img.src = src || "placeholder.png";
+  img.alt = title || "Media detail";
+  t.textContent = title || "";
+  d.textContent = desc || "";
+  overlay.style.display = "flex";
+}
+function closeMediaZoom(){
+  const overlay = document.getElementById("mediaZoomOverlay");
+  if (overlay) overlay.style.display = "none";
+}
+
+/* MEDIA BANNER LOGIC */
+let bannerIndex = 0;
+let bannerTimer = null;
+
+function renderBanner(){
+  if (!MEDIA.length) return;
+  const data = MEDIA[bannerIndex] || MEDIA[0];
+  const src = data?.src || "placeholder.png";
+  const host = document.getElementById("bannerMedia");
+  if (!host) return;
+
+  host.innerHTML = `<img src="${src}" alt="${escapeHtml(data?.title||"Banner")} (${escapeHtml(src)})" onerror="this.src='placeholder.png'">`;
+  host.style.cursor = "zoom-in";
+  host.onclick = function(){
+    openMediaZoom(src, data?.title || "Media", data?.desc || src);
+  };
+
+  const dotsWrap = document.getElementById("bannerDots");
+  if (!dotsWrap) return;
+  dotsWrap.innerHTML = "";
+  MEDIA.forEach((_,i)=>{
+    const d = document.createElement("div");
+    d.className = "bannerDot" + (i===bannerIndex ? " active" : "");
+    d.onclick = ()=>setBanner(i);
+    dotsWrap.appendChild(d);
+  });
+}
+function setBanner(i){
+  bannerIndex = (i + MEDIA.length) % MEDIA.length;
+  renderBanner();
+  restartBannerTimer();
+}
+function bannerNext(){ setBanner(bannerIndex + 1); }
+function bannerPrev(){ setBanner(bannerIndex - 1); }
+function restartBannerTimer(){
+  if (bannerTimer) clearInterval(bannerTimer);
+  bannerTimer = setInterval(bannerNext, 8000);
+}
+
+/* media grid */
+function renderMediaGrid(){
+  const grid = document.getElementById("mediaGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  MEDIA.forEach(m=>{
+    const card = document.createElement("div");
+    card.className = "mediaCard";
+    card.innerHTML = `
+      <img src="${m.src}" alt="${escapeHtml(m.title)} (${escapeHtml(m.src)})" onerror="this.src='placeholder.png'">
+      <h3>${escapeHtml(m.title)}</h3>
+      <p>${escapeHtml(m.desc || m.src)}</p>
+    `;
+    const img = card.querySelector("img");
+    if (img){
+      img.style.cursor = "zoom-in";
+      img.onclick = function(){
+        openMediaZoom(m.src, m.title, m.desc || m.src);
+      };
+    }
+    grid.appendChild(card);
+  });
+}
+
+/* Catalog render (100 at a time) */
+function resetGrid(){
+  currentIndex = 0;
+  document.getElementById("products").innerHTML = "";
+  loadBatch();
+}
+function loadBatch(){
+  if (isLoading) return;
+  if (currentIndex >= filtered.length) return;
+  isLoading = true;
+
+  const wrap = document.getElementById("products");
+  const slice = filtered.slice(currentIndex, currentIndex + BATCH_SIZE);
+
+  slice.forEach(p=>{
+    const name = getName(p);
+    const sku = getSku(p);
+    const img = getImg(p);
+    const descRaw = getDescription(p);              // raw, unescaped string for zoom
+    const desc = descRaw ? escapeHtml(descRaw) : "No description available.";
+    const { msrp, price } = calcPrices(p);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${img}" alt="${escapeHtml(name)} image" onerror="this.src='placeholder.png'">
+      <h4>${escapeHtml(name)}</h4>
+      <div class="metaLine">SKU: ${escapeHtml(sku)}</div>
+      <div class="priceRow">
+        <div class="msrp">MSRP: ${money(msrp)}</div>
+        <div class="onlinePrice">${money(price)} ${session.isB2B ? '<span class="b2b">B2B</span>' : ''}</div>
+      </div>
+      <div class="descToggle">View Description</div>
+      <div class="descBox">${desc}</div>
+      <button class="miniBtn">Add to Cart</button>
+    `;
+
+    const toggle = card.querySelector(".descToggle");
+    const box = card.querySelector(".descBox");
+    toggle.onclick = ()=>{
+      box.classList.toggle("open");
+      toggle.textContent = box.classList.contains("open") ? "Hide Description" : "View Description";
+    };
+
+    // Zoom for CSV product images
+    const imgEl = card.querySelector("img");
+    if (imgEl){
+      imgEl.style.cursor = "zoom-in";
+      imgEl.onclick = function(){
+        openMediaZoom(img, name, descRaw || "");
+      };
+    }
+
+    card.querySelector(".miniBtn").onclick = ()=> addCart({ sku, name, price: Number(price.toFixed(2)) });
+
+    wrap.appendChild(card);
+  });
+
+  currentIndex += BATCH_SIZE;
+  isLoading = false;
+}
+
+/* Filters */
+function applyFilters(){
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const cat = document.getElementById("categoryFilter").value;
+  const sub = document.getElementById("subCategoryFilter").value;
+
+  filtered = products.filter(p=>{
+    const name = getName(p).toLowerCase();
+    const sku = getSku(p).toLowerCase();
+    const matchQ = !q || name.includes(q) || sku.includes(q);
+    const pc = getCategory(p);
+    const ps = getSubcategory(p);
+    const matchCat = !cat || pc === cat;
+    const matchSub = !sub || ps === sub;
+    return matchQ && matchCat && matchSub;
+  });
+
+  resetGrid();
+}
+function buildCategories(){
+  const catSel = document.getElementById("categoryFilter");
+  const subSel = document.getElementById("subCategoryFilter");
+
+  const cats = [...new Set(products.map(getCategory).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  catSel.innerHTML = '<option value="">All Categories</option>' + cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+  function buildSubs(){
+    const chosen = catSel.value;
+    const subs = [...new Set(
+      products
+        .filter(p => !chosen || getCategory(p) === chosen)
+        .map(getSubcategory)
+        .filter(Boolean)
+    )].sort((a,b)=>a.localeCompare(b));
+
+    subSel.innerHTML = '<option value="">All Subcategories</option>' + subs.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+    subSel.disabled = subs.length === 0;
+  }
+
+  buildSubs();
+  catSel.onchange = ()=>{ buildSubs(); applyFilters(); };
+  subSel.onchange = applyFilters;
+}
+
+/* Cart */
+function toggleCart(open){ document.getElementById("cart").classList.toggle("open", !!open); }
+
+function addCart(item){
+  const f = cart.find(i => i.sku === item.sku);
+  if (f) f.qty++;
+  else cart.push({ ...item, qty: 1 });
+  renderCart();
+  toggleCart(true);
+}
+function clearCart(){ cart = []; renderCart(); }
+
+function incQty(sku){ const i = cart.find(x=>x.sku===sku); if (!i) return; i.qty++; renderCart(); }
+function decQty(sku){
+  const i = cart.find(x=>x.sku===sku); if (!i) return;
+  i.qty--; if (i.qty <= 0) cart = cart.filter(x=>x.sku!==sku);
+  renderCart();
+}
+function removeItem(sku){ cart = cart.filter(x=>x.sku!==sku); renderCart(); }
+
+function cartSummaryText(){
+  let text = "Cart Items:\n\n";
+  cart.forEach(i => { text += `${i.qty} x ${i.name} (${i.sku}) - ${money(i.price)}\n`; });
+  return text;
+}
+function cartTotals(){
+  let subtotal = 0;
+  cart.forEach(i=>{ subtotal += i.price * i.qty; });
+  const tax = session.isB2B ? 0 : subtotal * TAX_RATE;
+  const total = subtotal + tax;
+  return { subtotal, tax, total };
+}
+
+function renderCart(){
+  const el = document.getElementById("cartItems");
+  el.innerHTML = "";
+
+  let subtotal = 0;
+  cart.forEach(i=>{
+    subtotal += i.price * i.qty;
+
+    const row = document.createElement("div");
+    row.className = "cartItem";
+    row.innerHTML = `
+      <div style="min-width:0">
+        <b>${escapeHtml(i.name)}</b>
+        <div class="note">SKU: ${escapeHtml(i.sku)}</div>
+        <div class="note">${money(i.price)} each</div>
+      </div>
+      <div style="text-align:right">
+        <div class="cartControls">
+          <button class="qtyBtn" title="Decrease">−</button>
+          <div style="min-width:22px;text-align:center">${i.qty}</div>
+          <button class="qtyBtn" title="Increase">+</button>
+        </div>
+        <div class="note" style="margin-top:6px">Line: ${money(i.price * i.qty)}</div>
+        <div class="miniLink" style="margin-top:6px;display:inline-block">Remove</div>
+      </div>
+    `;
+    const btns = row.querySelectorAll(".qtyBtn");
+    btns[0].onclick = ()=>decQty(i.sku);
+    btns[1].onclick = ()=>incQty(i.sku);
+    row.querySelector(".miniLink").onclick = ()=>removeItem(i.sku);
+
+    el.appendChild(row);
+  });
+
+  const { subtotal:sub, tax, total } = cartTotals();
+  document.getElementById("subTotal").textContent = money(sub);
+  document.getElementById("taxLine").textContent = money(tax);
+  document.getElementById("grandTotal").textContent = money(total);
+  document.getElementById("taxNote").textContent = session.isB2B
+    ? "B2B accounts: estimated tax is not applied in this view."
+    : "Estimated tax shown for non-B2B users (8.7%). Final tax may vary by ship-to.";
+
+  const summary = cartSummaryText();
+  document.getElementById("cartDetails").value = summary;
+  const rfqArea = document.getElementById("rfqCartData");
+  if (rfqArea) rfqArea.value = summary;
+  const payArea = document.getElementById("paymentCartData");
+  if (payArea) payArea.value = summary;
+
+  const totalField = document.getElementById("paymentTotal");
+  const totalDisplay = document.getElementById("paymentTotalDisplay");
+  if (totalField && totalDisplay){
+    totalField.value = total.toFixed(2);
+    totalDisplay.value = money(total);
+  }
+
+  document.getElementById("pricingModeField").value = session.isB2B ? "B2B" : "Public";
+}
+
+/* RFQ */
+function openRFQ(){
+  document.getElementById("rfqOverlay").style.display="block";
+  document.getElementById("rfqModal").style.display="block";
+  document.getElementById("rfqCartData").value = cartSummaryText();
+  syncRFQMeta();
+}
+function closeRFQ(){
+  document.getElementById("rfqOverlay").style.display="none";
+  document.getElementById("rfqModal").style.display="none";
+}
+function syncRFQMeta(){
+  document.getElementById("rfqPricingMode").value = session.isB2B ? "B2B" : "Public";
+  document.getElementById("rfqCategory").value = document.getElementById("categoryFilter").value || "All";
+  document.getElementById("rfqSubCategory").value = document.getElementById("subCategoryFilter").value || "All";
+  return true;
+}
+
+/* PAYMENT MODAL FLOW */
+function openPayModal(){
+  if (!cart.length){
+    alert("Cart is empty. Add items to your cart before placing an order.");
+    return;
+  }
+  document.getElementById("payOverlay").style.display="block";
+  document.getElementById("payModal").style.display="block";
+  document.getElementById("paymentCartData").value = cartSummaryText();
+  syncPaymentMeta();
+}
+function closePayModal(){
+  document.getElementById("payOverlay").style.display="none";
+  document.getElementById("payModal").style.display="none";
+}
+function syncPaymentMeta(){
+  document.getElementById("paymentPricingMode").value = session.isB2B ? "B2B" : "Public";
+  const { total } = cartTotals();
+  const totalField = document.getElementById("paymentTotal");
+  const totalDisplay = document.getElementById("paymentTotalDisplay");
+  if (totalField && totalDisplay){
+    totalField.value = total.toFixed(2);
+    totalDisplay.value = money(total);
+  }
+  document.getElementById("paymentCartData").value = cartSummaryText();
+  return true;
+}
+
+/* Portal */
+function openPortal(){ document.getElementById("portal").style.display="block"; }
+function closePortal(){ document.getElementById("portal").style.display="none"; }
+function minPortal(){ document.getElementById("portal").classList.toggle("min"); }
+
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+function saveUsers(){ localStorage.setItem("users", JSON.stringify(users)); }
+
+function signup(){
+  const em = norm(document.getElementById("email").value).toLowerCase();
+  const pw = norm(document.getElementById("pass").value);
+  if (!em || !pw){
+    document.getElementById("msg").style.color="#b00020";
+    document.getElementById("msg").textContent="Enter email and password.";
+    return;
+  }
+  if (!users[em]) users[em] = { pass: pw, isB2B: false };
+  else users[em].pass = pw;
+  saveUsers();
+  document.getElementById("msg").style.color="#0a7a0a";
+  document.getElementById("msg").textContent="Account created/updated. Please login.";
+}
+function login(){
+  const em = norm(document.getElementById("email").value).toLowerCase();
+  const pw = norm(document.getElementById("pass").value);
+  const u = users[em];
+  if (!u || u.pass !== pw){
+    document.getElementById("msg").style.color="#b00020";
+    document.getElementById("msg").textContent="Invalid login.";
+    return;
+  }
+
+  session.email = em;
+  session.isLoggedIn = true;
+  session.isB2B = !!u.isB2B;
+
+  document.getElementById("portalLoggedOut").style.display="none";
+  document.getElementById("portalLoggedIn").style.display="block";
+  document.getElementById("whoami").textContent = em;
+  document.getElementById("acctTypeNote").textContent = session.isB2B
+    ? "Account Type: B2B (20% off MSRP, MAP enforced; tax not estimated)"
+    : "Account Type: Public (10% off MSRP; tax estimated)";
+  document.getElementById("msg").textContent="";
+
+  rerenderPricing();
+}
+function logout(){
+  session.email=null; session.isLoggedIn=false; session.isB2B=false; session.isAdmin=false;
+  document.getElementById("portalLoggedOut").style.display="block";
+  document.getElementById("portalLoggedIn").style.display="none";
+  document.getElementById("adminLoginBox").style.display="none";
+  document.getElementById("adminPanel").style.display="none";
+  document.getElementById("msg").textContent="";
+  rerenderPricing();
+}
+function resetPass(){
+  alert("Reset Password is a demo placeholder. Connect a real auth provider for secure resets.");
+}
+function openAdminLogin(){ document.getElementById("adminLoginBox").style.display="block"; }
+
+function adminLogin(){
+  const u = norm(document.getElementById("adminUser").value).toLowerCase();
+  const p = norm(document.getElementById("adminPass").value);
+  if (u !== ADMIN_USERNAME || p !== ADMIN_PASSWORD){
+    alert("Invalid admin credentials.");
+    return;
+  }
+  session.isAdmin = true;
+  document.getElementById("adminLoginBox").style.display="none";
+  document.getElementById("adminPanel").style.display="block";
+  document.getElementById("apiInventoryUrl").value = localStorage.getItem("li_api_inventory") || "";
+  document.getElementById("apiCrmUrl").value = localStorage.getItem("li_api_crm") || "";
+  document.getElementById("apiKey").value = localStorage.getItem("li_api_key") || "";
+  document.getElementById("apiStatus").textContent = "API settings loaded (local demo).";
+}
+function adminLogout(){
+  session.isAdmin = false;
+  document.getElementById("adminPanel").style.display="none";
+  document.getElementById("adminLoginBox").style.display="none";
+}
+function adminSetB2B(flag){
+  const em = norm(document.getElementById("adminFindEmail").value).toLowerCase();
+  if (!em){ document.getElementById("adminUserStatus").textContent="Enter a user email."; return; }
+  if (!users[em]){ document.getElementById("adminUserStatus").textContent="User not found. Have them create an account first."; return; }
+  users[em].isB2B = !!flag;
+  saveUsers();
+  document.getElementById("adminUserStatus").textContent = `Updated ${em} → ${flag ? "B2B" : "Public"}.`;
+
+  if (session.isLoggedIn && session.email === em){
+    session.isB2B = !!flag;
+    document.getElementById("acctTypeNote").textContent = session.isB2B
+      ? "Account Type: B2B (20% off MSRP, MAP enforced; tax not estimated)"
+      : "Account Type: Public (10% off MSRP; tax estimated)";
+    rerenderPricing();
+  }
+}
+function adminSaveApi(){
+  localStorage.setItem("li_api_inventory", norm(document.getElementById("apiInventoryUrl").value));
+  localStorage.setItem("li_api_crm", norm(document.getElementById("apiCrmUrl").value));
+  localStorage.setItem("li_api_key", norm(document.getElementById("apiKey").value));
+  document.getElementById("apiStatus").textContent = "Saved API settings (local demo).";
+}
+function adminClearApi(){
+  localStorage.removeItem("li_api_inventory");
+  localStorage.removeItem("li_api_crm");
+  localStorage.removeItem("li_api_key");
+  document.getElementById("apiInventoryUrl").value="";
+  document.getElementById("apiCrmUrl").value="";
+  document.getElementById("apiKey").value="";
+  document.getElementById("apiStatus").textContent = "Cleared API settings.";
+}
+
+/* Legal */
+function toggleLegal(show){
+  const drawer = document.getElementById("legalDrawer");
+  const overlay = document.getElementById("legalOverlay");
+  drawer.style.bottom = show ? "0" : "-90%";
+  overlay.style.opacity = show ? "1" : "0";
+  overlay.style.pointerEvents = show ? "auto" : "none";
+  document.body.style.overflow = show ? "hidden" : "auto";
+  overlay.onclick = ()=>toggleLegal(false);
+}
+
+/* Rerender pricing */
+function rerenderPricing(){
+  applyFilters();
+  renderCart();
+  document.getElementById("pricingModeField").value = session.isB2B ? "B2B" : "Public";
+  document.getElementById("rfqPricingMode").value = session.isB2B ? "B2B" : "Public";
+}
+
+/* Init */
+document.getElementById("search").addEventListener("input", applyFilters);
+
+new IntersectionObserver(entries=>{
+  if (entries[0].isIntersecting) loadBatch();
+}).observe(document.getElementById("scrollTrigger"));
+
+Papa.parse("catalog.csv",{
+  download:true,
+  header:true,
+  skipEmptyLines:true,
+  complete:r=>{
+    products = (r.data || []).filter(row => Object.values(row).some(v => String(v ?? "").trim() !== ""));
+    filtered = [...products];
+    buildCategories();
+    resetGrid();
+    renderCart();
+  },
+  error:()=>{
+    products = []; filtered = [];
+    buildCategories(); resetGrid(); renderCart();
+  }
+});
+
+/* Start banner & media grid */
+renderBanner();
+restartBannerTimer();
+renderMediaGrid();
+</script>
+</body>
+</html>
